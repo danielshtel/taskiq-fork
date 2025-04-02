@@ -12,6 +12,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 logger = getLogger(__name__)
 
+import traceback
 
 class TaskiqScheduler:
     """Scheduler class."""
@@ -23,6 +24,7 @@ class TaskiqScheduler:
     ) -> None:  # pragma: no cover
         self.broker = broker
         self.sources = sources
+        traceback.print_stack()
 
     async def startup(self) -> None:  # pragma: no cover
         """
