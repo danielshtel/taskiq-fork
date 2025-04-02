@@ -32,6 +32,7 @@ class TaskiqScheduler:
         connections or anything you'd like.
         """
         await self.broker.startup()
+        logger.debug('Scheduler started')
 
     async def on_ready(self, source: "ScheduleSource", task: ScheduledTask) -> None:
         """
@@ -46,14 +47,18 @@ class TaskiqScheduler:
         except ScheduledTaskCancelledError:
             logger.info("Scheduled task %s has been cancelled.", task.task_name)
         else:
+            logger.debug('Scheduled task %s has been sent.', task.schedule_id)
             await AsyncKicker(task.task_name, self.broker, task.labels).with_labels(
                 schedule_id=task.schedule_id,
             ).kiq(
                 *task.args,
                 **task.kwargs,
             )
+
             await maybe_awaitable(source.post_send(task))
+            logger.debug(f'Executed post send {task.schedule_id}')
 
     async def shutdown(self) -> None:
         """Shutdown the scheduler process."""
         await self.broker.shutdown()
+        logger.debug('Scheduler stopped')
