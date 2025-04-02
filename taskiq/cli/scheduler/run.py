@@ -144,6 +144,7 @@ async def delayed_send(
     )
     await scheduler.on_ready(source, task)
 
+from pprint import pformat
 
 async def run_scheduler_loop(scheduler: TaskiqScheduler) -> None:
     """
@@ -160,6 +161,8 @@ async def run_scheduler_loop(scheduler: TaskiqScheduler) -> None:
         # We use this method to correctly sleep for one minute.
         scheduled_tasks = await get_all_schedules(scheduler)
         for source, task_list in scheduled_tasks.items():
+            logger.info(f'Source: {source}')
+            logger.info(pformat(task_list))
             logger.debug("Got %d schedules from source %s.", len(task_list), source)
             for task in task_list:
                 try:
